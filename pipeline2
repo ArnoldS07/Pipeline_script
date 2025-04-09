@@ -1,0 +1,46 @@
+pipeline {
+  agent {
+    docker {
+      image 'node:14'
+      args '-u root' // run as root to avoid permission issues
+    }
+  }
+
+  environment {
+    HOME = "${WORKSPACE}/.npm-home" // writable npm home
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'main', url: 'https://github.com/ArnoldS07/new.git'
+      }
+    }
+
+    stage('Install Dependencies') {
+      steps {
+        sh 'mkdir -p $HOME'        // create custom home directory
+        sh 'npm install'
+      }
+    }
+
+    stage('Run Tests') {
+      steps {
+        sh 'npm test'
+      }
+    }
+
+    stage('Build') {
+      steps {
+        sh 'npm run build'
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        echo 'Deploying to production...'
+        // Add deployment steps
+      }
+    }
+  }
+}
